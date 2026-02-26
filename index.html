@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEATH NOTE | INTERPOL CLASSIFIED SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=UnifrakturMaguntia&family=Oswald:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #00d4ff;
+            --bg: #050505;
+            --text: #ffffff;
+            --card: rgba(20, 20, 20, 0.8);
+            --death-font: 'UnifrakturMaguntia', cursive;
+        }
+
+        .kira-mode {
+            --accent: #ff0000;
+            --bg: #0a0000;
+            --text: #ff0000;
+        }
+
+        * { cursor: crosshair; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Special Elite', cursive;
+            margin: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+        }
+
+        /* Animación de Entrada */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--accent);
+        }
+
+        .glitch {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            animation: glitch 500ms infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75); }
+            14% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.05em -0.025em 0 rgba(0, 255, 0, 0.75); }
+            15% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75); }
+            100% { text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            left: 0; top: 0; height: 100vh; width: 70px;
+            background: rgba(0,0,0,0.95);
+            border-right: 2px solid var(--accent);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 100;
+            transition: 0.4s;
+        }
+        
+        nav:hover { width: 180px; }
+
+        nav button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 20px;
+            text-align: left;
+            font-family: 'Oswald', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: var(--accent); color: black; }
+
+        main { margin-left: 70px; padding: 40px; min-height: 100vh; }
+
+        .view { display: none; animation: slideIn 0.5s ease-out; }
+        .view.active { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        /* Personajes Pro */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            transition: 0.5s;
+        }
+
+        .card:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--accent); transform: scale(1.02); }
+
+        .card img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: 0.6s;
+        }
+
+        .card:hover img { filter: grayscale(0%); transform: scale(1.1); }
+
+        .info-box {
+            padding: 20px;
+            background: linear-gradient(transparent, black);
+            position: absolute;
+            bottom: 0; width: 100%;
+        }
+
+        .info-box h3 { font-family: var(--death-font); font-size: 2rem; margin: 0; }
+
+        /* Biblioteca */
+        .tomo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .tomo-item {
+            perspective: 1000px;
+        }
+
+        .tomo-item img {
+            width: 100%;
+            transition: 0.6s;
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .tomo-item:hover img { transform: rotateY(-25deg); }
+
+        /* Botón Justicia */
+        .justice-btn {
+            position: fixed;
+            top: 20px; right: 20px;
+            padding: 10px 20px;
+            background: black;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            font-weight: bold;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body onclick="initAudio()">
+
+    <div id="loader">
+        <div class="glitch">ACCEDIENDO...</div>
+        <p>IDENTIFICANDO SUJETO: FERRERAL375</p>
+    </div>
+
+    <audio id="sfx-write" src="https://www.myinstants.com/media/sounds/death-note-writing.mp3"></audio>
+    <audio id="voice-kira" src="https://www.myinstants.com/media/sounds/kira-laugh.mp3"></audio>
+    <audio id="voice-l" src="https://www.myinstants.com/media/sounds/l-theme.mp3"></audio>
+
+    <button class="justice-btn" onclick="toggleMode()">SYSTEM OVERRIDE</button>
+
+    <nav>
+        <button onclick="changeTab('home')">🏠 INICIO</button>
+        <button onclick="changeTab('files')">📂 ARCHIVOS</button>
+        <button onclick="changeTab('manga')">📖 MANGAS</button>
+        <button onclick="changeTab('rules')">📓 REGLAS</button>
+    </nav>
+
+    <main>
+        <section id="home" class="view active">
+            <h1 style="font-family: var(--death-font); font-size: 6rem; text-align: center;">Death Note</h1>
+            <div style="border: 1px solid var(--accent); padding: 30px; background: rgba(255,255,255,0.02);">
+                <h2>ESTADO DE LA INVESTIGACIÓN</h2>
+                <p>El servidor ha sido oficializado por <strong>Ferreral375-Debug</strong>. Todos los datos sobre el cuaderno y sus poseedores han sido cargados.</p>
+                <p>Mueve el puntero sobre los sujetos para revelar su identidad real.</p>
+            </div>
+        </section>
+
+        <section id="files" class="view">
+            <h2 style="font-family: var(--death-font); font-size: 3rem;">Sujetos Clasificados</h2>
+            <div class="char-grid">
+                <div class="card">
+                    <img src="https://www.nautiljon.com/images/perso/00/10/yagami_light_1.jpg" alt="Light">
+                    <div class="info-box"><h3>Light Yagami</h3><p>Kira</p></div>
+                </div>
+                <div class="card">
+                    <img src="https://www.nautiljon.com/images/perso/00/20/l_2.jpg" alt="L">
+                    <div class="info-box"><h3>L Lawliet</h3><p>Detective</p></div>
+                </div>
+                <div class="card">
+                    <img src="https://www.nautiljon.com/images/perso/00/75/near_57.jpg" alt="Near">
+                    <div class="info-box"><h3>Near (N)</h3><p>Sucesores</p></div>
+                </div>
+                <div class="card">
+                    <img src="https://www.nautiljon.com/images/perso/00/85/mello_58.jpg" alt="Mello">
+                    <div class="info-box"><h3>Mello (M)</h3><p>Sucesores</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="manga" class="view">
+            <h2 style="font-family: var(--death-font); font-size: 3rem;">Archivo de Tomos (1-13)</h2>
+            <div class="tomo-grid" id="manga-list">
+                </div>
+        </section>
+
+        <section id="rules" class="view">
+            <div style="background: #fff; color: #000; padding: 60px; max-width: 700px; margin: auto; box-shadow: 0 0 50px var(--accent);">
+                <h2 style="font-family: var(--death-font); text-align: center; border-bottom: 2px solid #000;">How to use it</h2>
+                <p>1. El humano cuyo nombre sea escrito en este cuaderno morirá.</p>
+                <p>2. Este cuaderno no surtirá efecto a menos que el escritor tenga el rostro de la persona en su mente.</p>
+                <p>3. Si la causa de la muerte se escribe en los 40 segundos siguientes al nombre, ocurrirá.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Inicializar Audio por interacción
+        let audioInit = false;
+        function initAudio() {
+            if(!audioInit) {
+                document.getElementById('voice-l').volume = 0.2;
+                document.getElementById('voice-l').play();
+                audioInit = true;
+            }
+        }
+
+        // Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            }, 2000);
+            renderMangas();
+        });
+
+        // Tabs
+        function changeTab(id) {
+            document.getElementById('sfx-write').play();
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // Render Mangas con nuevas fotos estables
+        function renderMangas() {
+            const container = document.getElementById('manga-list');
+            const imgs = [
+                "910398lV9DL", "919XvB6T+HL", "91nU2A0N01L", "91G6F8h-P0L", 
+                "91pI-E-A-hL", "9167HlO6WpL", "91yLhG0n2DL", "91r89Yj6j1L", 
+                "91-l0y48m7L", "91D2XnK93rL", "91vU68v67PL", "91fIqU8-56L", "91I6SntYvUL"
+            ];
+            imgs.forEach((img, i) => {
+                container.innerHTML += `
+                    <div class="tomo-item">
+                        <img src="https://m.media-amazon.com/images/I/${img}.jpg" alt="Tomo ${i+1}">
+                        <p>Tomo ${i+1}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Toggle Modo Kira
+        function toggleMode() {
+            document.body.classList.toggle('kira-mode');
+            if(document.body.classList.contains('kira-mode')) {
+                document.getElementById('voice-kira').play();
+            } else {
+                document.getElementById('voice-l').play();
+            }
+        }
+    </script>
+</body>
+</html>
